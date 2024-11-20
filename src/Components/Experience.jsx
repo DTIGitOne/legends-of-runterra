@@ -5,14 +5,14 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 const Experience = () => {
-  const [path, setPath] = useState([]);
+  const [path, setPath] = useState([]); // state to save path dots
   
-  const cameraGroup = useRef();
-  const scroll = useScroll();
+  const cameraGroup = useRef(); // group ref for camera and path 
+  const scroll = useScroll(); // scrpll from React three
 
   useEffect(() => {
     const loadPathData = async () => {
-      const response = await fetch("Track/ProjectPathMain.json"); // Adjust the path as needed
+      const response = await fetch("Track/ProjectPathMain.json"); // Path render into .JSON using blender exetension
       const data = await response.json();
       const pathPoints = data.points.map((point) => new THREE.Vector3(point.x, point.y, point.z));
       
@@ -30,7 +30,7 @@ const Experience = () => {
     );
     
     const curPoint = path[curPointIndex];
-    const pointAhead = path[(curPointIndex + 1) % path.length];
+    const pointAhead = path[(curPointIndex + 2) % path.length];
     
     // Direction vector from curPoint to pointAhead
     const direction = new THREE.Vector3().subVectors(pointAhead, curPoint).normalize();
@@ -44,11 +44,11 @@ const Experience = () => {
   
     // Add tilt down by adjusting the camera's rotation
     // Tilt the camera down on the X-axis (tiltFactor is the amount of tilt)
-    const tiltFactor = 0.1; // Adjust this value to control the tilt amount
+    const tiltFactor = 0.02; // Adjust this value to control the tilt amount
     cameraGroup.current.rotation.x += tiltFactor;
   
     // Interpolate the camera position smoothly along the path
-    cameraGroup.current.position.lerp(curPoint, delta * 12);
+    cameraGroup.current.position.lerp(curPoint, delta * 24);
   });
 
   return (
@@ -59,14 +59,14 @@ const Experience = () => {
       <group ref={cameraGroup}>
       <PerspectiveCamera
         makeDefault
-        position={[0, 0.04, 0]}  // Set initial position here (example position)
-        fov={17}
-        near={0.1}
-        far={0.6}
+        position={[0, 0, 0]}  // initial position of the camera
+        fov={40} // fieald of view 
+        near={0.1} // view distance min
+        far={13} // view distnace max
       />
       {path.length > 0 && (
         <Line
-          points={path}
+          points={path} // camera path
           opacity={0}
           transparent
           lineWidth={3}
