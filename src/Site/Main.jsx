@@ -8,7 +8,7 @@ const Main = () => {
       <>
        <Canvas>
           <color attach="background" args={["#ffffff"]} />
-          <ScrollControls pages={5} damping={0.3}>
+          <ScrollControls pages={8} damping={0.7}>
                 <Experience />
           </ScrollControls>
         </Canvas>

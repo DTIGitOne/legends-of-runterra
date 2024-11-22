@@ -23,32 +23,36 @@ const Experience = () => {
 
   useFrame((_state, delta) => {
     if (!path || path.length === 0) return; // Ensure path is not empty
-    
+  
+    // Calculate current point and the next point on the path
     const curPointIndex = Math.min(
       Math.round(scroll.offset * path.length),
       path.length - 1
     );
-    
+  
     const curPoint = path[curPointIndex];
-    const pointAhead = path[(curPointIndex + 2) % path.length];
-    
-    // Direction vector from curPoint to pointAhead
+    const pointAhead = path[(curPointIndex + 1) % path.length];
+  
+    // Interpolate camera position between curPoint and pointAhead
+    const positionLerpFactor = delta * 6; // Adjust speed as needed
+    const nextPosition = new THREE.Vector3().lerpVectors(curPoint, pointAhead, scroll.offset % 1);
+    cameraGroup.current.position.lerp(nextPosition, positionLerpFactor);
+  
+    // Calculate direction vector and create a quaternion for smooth rotation
     const direction = new THREE.Vector3().subVectors(pointAhead, curPoint).normalize();
-    
-    // Ensure the camera is looking forward along the path
-    // Invert the direction if the camera is looking backward
-    const adjustedDirection = direction.negate(); 
+    const targetQuaternion = new THREE.Quaternion().setFromUnitVectors(
+      new THREE.Vector3(0, 0, -1), // Default camera forward direction
+      direction
+    );
   
-    // Apply smooth rotation towards the new direction
-    cameraGroup.current.lookAt(curPoint.clone().add(adjustedDirection));
+    // Apply tilt (optional)
+    const tiltFactor = -0.1; // Slight downward tilt
+    const tiltQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(tiltFactor, 0, 0));
+    targetQuaternion.multiply(tiltQuaternion);
   
-    // Add tilt down by adjusting the camera's rotation
-    // Tilt the camera down on the X-axis (tiltFactor is the amount of tilt)
-    const tiltFactor = 0.02; // Adjust this value to control the tilt amount
-    cameraGroup.current.rotation.x += tiltFactor;
-  
-    // Interpolate the camera position smoothly along the path
-    cameraGroup.current.position.lerp(curPoint, delta * 24);
+    // Smoothly interpolate the camera's rotation
+    const rotationSlerpFactor = delta * 4; // Adjust rotation speed as needed
+    cameraGroup.current.quaternion.slerp(targetQuaternion, rotationSlerpFactor);
   });
 
   return (
@@ -60,9 +64,9 @@ const Experience = () => {
       <PerspectiveCamera
         makeDefault
         position={[0, 0, 0]}  // initial position of the camera
-        fov={40} // fieald of view 
+        fov={60} // fieald of view 
         near={0.1} // view distance min
-        far={13} // view distnace max
+        far={6} // view distnace max
       />
       {path.length > 0 && (
         <Line
