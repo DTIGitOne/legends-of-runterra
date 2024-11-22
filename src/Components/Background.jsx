@@ -1,17 +1,21 @@
 import { Environment, Sphere } from "@react-three/drei";
 import { Gradient, LayerMaterial } from "lamina";
-import * as THREE from "three"
+import * as THREE from "three";
 
 const Background = () => {
-    return (
-      <>
-        <Environment preset="sunset" />
-        <Sphere scale={[100, 100, 100]} rotation-y={Math.PI / 2} />
-        <LayerMaterial lighting="physical" transmission={0.5} side={THREE.BackSide}>
-            <Gradient colorA={"#357ca1"} colorB={"white"} axes={"y"} start={0} end={-0.5} />
-        </LayerMaterial>
-      </>
-    );
-  };
+  return (
+    <>
+      {/* Add environment for realistic lighting */}
+      <Environment preset="sunset" />
+      <ambientLight intensity={1} />
+      <directionalLight position={[10, 10, 10]} intensity={1} />
+
+      {/* Large sphere with a gradient background */}
+      <Sphere scale={[40, 40, 40]} rotation-y={Math.PI / 2}>
+          <meshStandardMaterial color="#357ca1" side={THREE.BackSide} />
+      </Sphere>
+    </>
+  );
+};
 
 export default Background;

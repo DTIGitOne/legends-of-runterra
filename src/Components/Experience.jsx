@@ -3,6 +3,7 @@ import { Map } from "./Map";
 import { useEffect, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import Background from "./Background";
 
 const Experience = () => {
   const [path, setPath] = useState([]); // state to save path dots
@@ -58,7 +59,7 @@ const Experience = () => {
   return (
     <>
       {/* <OrbitControls enableZoom={false} /> */}
-      {/* <Background /> */}
+      <Background /> 
       <Map />
       <group ref={cameraGroup}>
       <PerspectiveCamera
@@ -66,7 +67,7 @@ const Experience = () => {
         position={[0, 0, 0]}  // initial position of the camera
         fov={60} // fieald of view 
         near={0.1} // view distance min
-        far={6} // view distnace max
+        far={30} // view distnace max
       />
       {path.length > 0 && (
         <Line
