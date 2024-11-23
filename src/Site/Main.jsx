@@ -6,12 +6,15 @@ import * as THREE from "three";
 const Main = () => {
     return (
       <>
+      {/*
+        onCreated={({ gl, scene }) => {
+        scene.fog = new THREE.Fog("rgba(255, 255, 255, 0.1)", 4, 6); // Fog color, start, and end distances
+       }} 
+        */}
        <Canvas
-       onCreated={({ gl, scene }) => {
-        scene.fog = new THREE.Fog("#ffffff", 4, 6); // Fog color, start, and end distances
-      }}
+       
        >
-          <ScrollControls pages={8} damping={0.7}>
+          <ScrollControls pages={100} damping={1}>
               <Experience />
           </ScrollControls>
         </Canvas>

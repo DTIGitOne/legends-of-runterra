@@ -7,11 +7,11 @@ const Background = () => {
     <>
       {/* Add environment for realistic lighting */}
       <Environment preset="sunset" />
-      <ambientLight intensity={1} />
-      <directionalLight position={[10, 10, 10]} intensity={1} />
+      <ambientLight intensity={0} />
+      <directionalLight position={[0, 0, 0]} intensity={0} />
 
       {/* Large sphere with a gradient background */}
-      <Sphere scale={[40, 40, 40]} rotation-y={Math.PI / 2}>
+      <Sphere scale={[12, 20, 20]} rotation-y={Math.PI / 2}>
           <meshStandardMaterial color="#357ca1" side={THREE.BackSide} />
       </Sphere>
     </>

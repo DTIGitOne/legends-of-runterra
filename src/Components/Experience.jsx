@@ -1,9 +1,10 @@
-import { Line, OrbitControls, PerspectiveCamera, useScroll } from "@react-three/drei";
+import { Line, OrbitControls, PerspectiveCamera, Text, useScroll } from "@react-three/drei";
 import { Map } from "./Map";
 import { useEffect, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import Background from "./Background";
+import { bilgeWaterText, demaciaText, freljordText, ioniaText, ixtalText, noxusText, piltoverText, shurimaText } from "../Data/text";
 
 const Experience = () => {
   const [path, setPath] = useState([]); // state to save path dots
@@ -58,9 +59,152 @@ const Experience = () => {
 
   return (
     <>
-      {/* <OrbitControls enableZoom={false} /> */}
+      {/* background component */}
       <Background /> 
+
+      {/* the terrain component */}
       <Map />
+
+      {/* text */}
+
+      {/* Shiruma Text */}
+      <group position={[0.8, 0.85, 4.7]}>
+      <Text
+        color="white"
+        font="/Friz Quadrata Regular.ttf"
+        anchorX="middle"
+        anchorY="middle"
+        fontSize={0.07}
+        maxWidth={2.5}
+        lineHeight={1.2}
+        whiteSpace="pre-line"
+        rotation={[Math.PI / -100, -0.9, 0]}
+        textAlign="center"
+      >
+       {shurimaText}
+      </Text>
+      </group>
+
+      {/* Ixtal Text */}
+      <group position={[6.4, 0.91, 5.35]}>
+      <Text
+        color="white"
+        anchorX="middle"
+        anchorY="middle"
+        fontSize={0.055}
+        maxWidth={2.5}
+        lineHeight={1.2}
+        whiteSpace="pre-line"
+        rotation={[Math.PI / -100, -0.58, 0]}
+        textAlign="center"
+      >
+       {ixtalText}
+      </Text>
+      </group>
+
+      {/* Bilewater Text */}
+      <group position={[10.2, 0.55, 2.58]}>
+      <Text
+        color="white"
+        anchorX="middle"
+        anchorY="middle"
+        fontSize={0.045}
+        maxWidth={2.5}
+        lineHeight={1.2}
+        whiteSpace="pre-line"
+        rotation={[Math.PI / -500, -1.7, 0]}
+        textAlign="center"
+      >
+       {bilgeWaterText}
+      </Text>
+      </group>
+
+      {/* Ionia Text */}
+      <group position={[9, 0.75, -5.9]}>
+      <Text
+        color="white"
+        anchorX="middle"
+        anchorY="middle"
+        fontSize={0.04}
+        maxWidth={2.5}
+        lineHeight={1.2}
+        whiteSpace="pre-line"
+        rotation={[Math.PI / -500, 0.3, 0]}
+        textAlign="center"
+      >
+       {ioniaText}
+      </Text>
+      </group>
+
+      {/* Noxus Text */}
+      <group position={[-1.03, 0.74, -4.63]}>
+      <Text
+        color="white"
+        anchorX="middle"
+        anchorY="middle"
+        fontSize={0.037}
+        maxWidth={2.5}
+        lineHeight={1.2}
+        whiteSpace="pre-line"
+        rotation={[Math.PI / 50, -1.9, 0]}
+        textAlign="center"
+      >
+       {noxusText}
+      </Text>
+      </group>
+
+      {/* Freljord Text */}
+      <group position={[-9.05, 0.79, -4.62]}>
+      <Text
+        color="white"
+        anchorX="middle"
+        anchorY="middle"
+        fontSize={0.037}
+        maxWidth={2.5}
+        lineHeight={1.2}
+        whiteSpace="pre-line"
+        rotation={[Math.PI / 50, 0, 0.14]}
+        textAlign="center"
+      >
+       {freljordText}
+      </Text>
+      </group>
+
+      {/* Demacia Text */}
+      <group position={[-8.6, 0.6, -2.04]}>
+      <Text
+        color="white"
+        anchorX="middle"
+        anchorY="middle"
+        fontSize={0.028}
+        maxWidth={2.5}
+        lineHeight={1.2}
+        whiteSpace="pre-line"
+        rotation={[Math.PI / -100, 1, 0]}
+        textAlign="center"
+      >
+       {demaciaText}
+      </Text>
+      </group>
+
+      {/* Piltover Text */}
+      <group position={[3.69, 0.34, 0.74]}>
+      <Text
+        color="white"
+        anchorX="middle"
+        anchorY="middle"
+        fontSize={0.03}
+        maxWidth={2.5}
+        lineHeight={1.2}
+        whiteSpace="pre-line"
+        rotation={[Math.PI / -100, -0.7, 0.1]}
+        textAlign="center"
+      >
+       {piltoverText}
+      </Text>
+      </group>
+
+      {/* camera and path group */}
       <group ref={cameraGroup}>
       <PerspectiveCamera
         makeDefault
@@ -78,6 +222,7 @@ const Experience = () => {
         />
       )}
       </group>
+
     </>
   );
 };
