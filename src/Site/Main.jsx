@@ -14,7 +14,7 @@ const Main = () => {
        <Canvas
        
        >
-          <ScrollControls pages={100} damping={1}>
+          <ScrollControls pages={90} damping={0.75}>
               <Experience />
           </ScrollControls>
         </Canvas>

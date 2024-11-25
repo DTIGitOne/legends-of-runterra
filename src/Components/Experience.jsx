@@ -6,15 +6,18 @@ import * as THREE from "three";
 import Background from "./Background";
 import { bilgeWaterText, demaciaText, freljordText, ioniaText, ixtalText, noxusText, piltoverText, shurimaText } from "../Data/text";
 
-const Experience = () => {
-  const [path, setPath] = useState([]); // state to save path dots
-  
-  const cameraGroup = useRef(); // group ref for camera and path 
-  const scroll = useScroll(); // scrpll from React three
+const easeInOutCubic = (t) => {
+  return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+};
 
+const Experience = () => {
+  const [path, setPath] = useState([]); // State to save path dots
+  const cameraGroup = useRef(); // Group ref for camera and path
+  const scroll = useScroll(); // Scroll from React Three
+  
   useEffect(() => {
     const loadPathData = async () => {
-      const response = await fetch("Track/ProjectPathMain.json"); // Path render into .JSON using blender exetension
+      const response = await fetch("Track/ProjectPathMain.json"); // Path render into .JSON using Blender extension
       const data = await response.json();
       const pathPoints = data.points.map((point) => new THREE.Vector3(point.x, point.y, point.z));
       
@@ -25,7 +28,7 @@ const Experience = () => {
 
   useFrame((_state, delta) => {
     if (!path || path.length === 0) return; // Ensure path is not empty
-  
+
     // Calculate current point and the next point on the path
     const curPointIndex = Math.min(
       Math.round(scroll.offset * path.length),
@@ -35,10 +38,13 @@ const Experience = () => {
     const curPoint = path[curPointIndex];
     const pointAhead = path[(curPointIndex + 1) % path.length];
   
-    // Interpolate camera position between curPoint and pointAhead
-    const positionLerpFactor = delta * 6; // Adjust speed as needed
-    const nextPosition = new THREE.Vector3().lerpVectors(curPoint, pointAhead, scroll.offset % 1);
-    cameraGroup.current.position.lerp(nextPosition, positionLerpFactor);
+    // Interpolate camera position between curPoint and pointAhead using easing
+    const scrollFraction = scroll.offset % 1;
+    const easedFraction = easeInOutCubic(scrollFraction); // Easing for smoothness
+    
+    const tempPosition = new THREE.Vector3().lerpVectors(curPoint, pointAhead, easedFraction);
+    const positionLerpFactor = Math.max(delta * 1, 0.01); // Ensure minimal lerp speed for smoothness
+    cameraGroup.current.position.lerp(tempPosition, positionLerpFactor);
   
     // Calculate direction vector and create a quaternion for smooth rotation
     const direction = new THREE.Vector3().subVectors(pointAhead, curPoint).normalize();
@@ -47,16 +53,16 @@ const Experience = () => {
       direction
     );
   
-    // Apply tilt (optional)
+    // Apply tilt 
     const tiltFactor = -0.1; // Slight downward tilt
     const tiltQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(tiltFactor, 0, 0));
     targetQuaternion.multiply(tiltQuaternion);
   
     // Smoothly interpolate the camera's rotation
-    const rotationSlerpFactor = delta * 4; // Adjust rotation speed as needed
+    const rotationSlerpFactor = Math.max(delta * 2, 0.001); // Ensure minimal rotation speed for smoothness
     cameraGroup.current.quaternion.slerp(targetQuaternion, rotationSlerpFactor);
   });
-
+  
   return (
     <>
       {/* background component */}
@@ -70,7 +76,6 @@ const Experience = () => {
       {/* Shiruma Text */}
       <group position={[0.8, 0.85, 4.7]}>
       <Text
-        color="radial-gradient(ellipse farthest-corner at top right, #E3CE76 0%, #A67F3C 100%)"
         font="/Friz Quadrata Regular.ttf"
         anchorX="middle"
         anchorY="middle"
@@ -198,7 +203,7 @@ const Experience = () => {
       </group>
 
       {/* Piltover Text */}
-      <group position={[3.69, 0.38, 0.74]}>
+      <group position={[3.25, 0.57, -0.34]}>
       <Text
         color="white"
         anchorX="middle"
@@ -207,7 +212,7 @@ const Experience = () => {
         maxWidth={2.5}
         lineHeight={1.2}
         whiteSpace="pre-line"
-        rotation={[Math.PI / -100, -2.2, 0.1]}
+        rotation={[Math.PI / -100, -1.9, 0.05]}
         textAlign="center"
       >
        {piltoverText}

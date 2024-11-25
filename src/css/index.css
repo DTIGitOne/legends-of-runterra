@@ -18,3 +18,18 @@ code {
   width: 100vw;
   height: 100vh;
 }
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+/* TRACK */
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.23);
+}
+
+/* HANDELING */
+::-webkit-scrollbar-thumb {
+  background: radial-gradient(ellipse farthest-corner at top right, #E3CE76 0%, #A67F3C 100%);
+  height: 10%;
+}
