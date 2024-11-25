@@ -1,4 +1,4 @@
-import { Line, OrbitControls, PerspectiveCamera, Text, useScroll } from "@react-three/drei";
+import { GradientTexture, Line, OrbitControls, PerspectiveCamera, Text, useScroll } from "@react-three/drei";
 import { Map } from "./Map";
 import { useEffect, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
@@ -70,7 +70,7 @@ const Experience = () => {
       {/* Shiruma Text */}
       <group position={[0.8, 0.85, 4.7]}>
       <Text
-        color="white"
+        color="radial-gradient(ellipse farthest-corner at top right, #E3CE76 0%, #A67F3C 100%)"
         font="/Friz Quadrata Regular.ttf"
         anchorX="middle"
         anchorY="middle"
@@ -81,6 +81,16 @@ const Experience = () => {
         rotation={[Math.PI / -100, -0.9, 0]}
         textAlign="center"
       >
+       {/* text color */}
+       <meshStandardMaterial>
+          <GradientTexture
+            stops={[0, 1]} // Gradient stops
+            colors={['#E7D178', '#C39547']} // Gradient colors
+            size={300}
+          />
+       </meshStandardMaterial>
+
+       {/* inner text variable */}
        {shurimaText}
       </Text>
       </group>
@@ -137,7 +147,7 @@ const Experience = () => {
       </group>
 
       {/* Noxus Text */}
-      <group position={[-1.03, 0.74, -4.63]}>
+      <group position={[-1.08, 0.74, -4.63]}>
       <Text
         color="white"
         anchorX="middle"
@@ -146,7 +156,7 @@ const Experience = () => {
         maxWidth={2.5}
         lineHeight={1.2}
         whiteSpace="pre-line"
-        rotation={[Math.PI / 50, -1.9, 0]}
+        rotation={[Math.PI / 50, 0.2, 0]}
         textAlign="center"
       >
        {noxusText}
@@ -163,7 +173,7 @@ const Experience = () => {
         maxWidth={2.5}
         lineHeight={1.2}
         whiteSpace="pre-line"
-        rotation={[Math.PI / 50, 0, 0.14]}
+        rotation={[Math.PI / 40, 2, -0.07]}
         textAlign="center"
       >
        {freljordText}
@@ -180,7 +190,7 @@ const Experience = () => {
         maxWidth={2.5}
         lineHeight={1.2}
         whiteSpace="pre-line"
-        rotation={[Math.PI / -100, 1, 0]}
+        rotation={[Math.PI / 100, -1.5, 0]}
         textAlign="center"
       >
        {demaciaText}
@@ -188,7 +198,7 @@ const Experience = () => {
       </group>
 
       {/* Piltover Text */}
-      <group position={[3.69, 0.34, 0.74]}>
+      <group position={[3.69, 0.38, 0.74]}>
       <Text
         color="white"
         anchorX="middle"
@@ -197,7 +207,7 @@ const Experience = () => {
         maxWidth={2.5}
         lineHeight={1.2}
         whiteSpace="pre-line"
-        rotation={[Math.PI / -100, -0.7, 0.1]}
+        rotation={[Math.PI / -100, -2.2, 0.1]}
         textAlign="center"
       >
        {piltoverText}
