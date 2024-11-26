@@ -5,8 +5,9 @@
 /.pnp
 .pnp.js
 
-#punlic
+#public
 /public
+public
 
 # testing
 /coverage

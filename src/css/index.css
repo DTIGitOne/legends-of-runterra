@@ -25,11 +25,12 @@ code {
 
 /* TRACK */
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.23);
+  background: rgba(255, 255, 255, 0.10);
 }
 
 /* HANDELING */
 ::-webkit-scrollbar-thumb {
   background: radial-gradient(ellipse farthest-corner at top right, #E3CE76 0%, #A67F3C 100%);
+  border-radius: 25px;
   height: 10%;
 }

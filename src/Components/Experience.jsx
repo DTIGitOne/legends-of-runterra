@@ -1,10 +1,11 @@
 import { GradientTexture, Line, OrbitControls, PerspectiveCamera, Text, useScroll } from "@react-three/drei";
 import { Map } from "./Map";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import Background from "./Background";
-import { bilgeWaterText, demaciaText, freljordText, ioniaText, ixtalText, noxusText, piltoverText, shurimaText } from "../Data/text";
+import { bilgeWaterText, dataArray, demaciaText, freljordText, ioniaText, ixtalText, noxusText, piltoverText, shurimaText } from "../Data/text";
+import TextComponent from "./TextComponent";
 
 const easeInOutCubic = (t) => {
   return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
@@ -12,8 +13,12 @@ const easeInOutCubic = (t) => {
 
 const Experience = () => {
   const [path, setPath] = useState([]); // State to save path dots
+
+  const cameraRail = useRef();
   const cameraGroup = useRef(); // Group ref for camera and path
   const scroll = useScroll(); // Scroll from React Three
+
+  const FRICTION_DISTANCE = 2.5;
   
   useEffect(() => {
     const loadPathData = async () => {
@@ -28,8 +33,8 @@ const Experience = () => {
 
   useFrame((_state, delta) => {
     if (!path || path.length === 0) return; // Ensure path is not empty
-
-    // Calculate current point and the next point on the path
+  
+    // Calculate the current point and the next point on the path
     const curPointIndex = Math.min(
       Math.round(scroll.offset * path.length),
       path.length - 1
@@ -41,27 +46,69 @@ const Experience = () => {
     // Interpolate camera position between curPoint and pointAhead using easing
     const scrollFraction = scroll.offset % 1;
     const easedFraction = easeInOutCubic(scrollFraction); // Easing for smoothness
-    
+  
     const tempPosition = new THREE.Vector3().lerpVectors(curPoint, pointAhead, easedFraction);
     const positionLerpFactor = Math.max(delta * 1, 0.01); // Ensure minimal lerp speed for smoothness
     cameraGroup.current.position.lerp(tempPosition, positionLerpFactor);
   
-    // Calculate direction vector and create a quaternion for smooth rotation
-    const direction = new THREE.Vector3().subVectors(pointAhead, curPoint).normalize();
-    const targetQuaternion = new THREE.Quaternion().setFromUnitVectors(
-      new THREE.Vector3(0, 0, -1), // Default camera forward direction
-      direction
-    );
+    // Check proximity to text positions
+    let isLookingAtText = false;
+    let targetLookAt = null;
   
-    // Apply tilt 
-    const tiltFactor = -0.1; // Slight downward tilt
-    const tiltQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(tiltFactor, 0, 0));
-    targetQuaternion.multiply(tiltQuaternion);
+    dataArray.forEach((text) => {
+      const textPosition = new THREE.Vector3(...text.pos); // Parse position from JSON
+      const distance = cameraGroup.current.position.distanceTo(textPosition);
   
-    // Smoothly interpolate the camera's rotation
-    const rotationSlerpFactor = Math.max(delta * 2, 0.001); // Ensure minimal rotation speed for smoothness
-    cameraGroup.current.quaternion.slerp(targetQuaternion, rotationSlerpFactor);
+      if (distance < FRICTION_DISTANCE) {
+        // Calculate direction from camera to text and the forward direction of the camera
+        const directionToText = new THREE.Vector3().subVectors(
+          textPosition,
+          cameraGroup.current.position
+        ).normalize();
+  
+        const cameraForward = new THREE.Vector3(0, 0, -1)
+          .applyQuaternion(cameraGroup.current.quaternion);
+  
+        // Only look at the text if it is in front of the camera
+        const dotProduct = directionToText.dot(cameraForward);
+        if (dotProduct > 0) { // Text is in front of the camera
+          // Apply downward offset to the target look-at position
+          targetLookAt = textPosition.clone();
+          targetLookAt.y -= 0.3; // Pan down by 0.5 units (adjust as needed)
+          isLookingAtText = true;
+        }
+      }
+    });
+  
+    if (isLookingAtText && targetLookAt) {
+      // Smoothly look at the adjusted text position
+      const directionToText = new THREE.Vector3().subVectors(targetLookAt, cameraGroup.current.position).normalize();
+      const targetQuaternion = new THREE.Quaternion().setFromUnitVectors(
+        new THREE.Vector3(0, 0, -1), // Default camera forward direction
+        directionToText
+      );
+  
+      const rotationSlerpFactor = Math.max(delta * 1, 0.001); // Smooth rotation factor
+      cameraGroup.current.quaternion.slerp(targetQuaternion, rotationSlerpFactor);
+    } else {
+      // Default smooth rotation along the path
+      const direction = new THREE.Vector3().subVectors(pointAhead, curPoint).normalize();
+      const targetQuaternion = new THREE.Quaternion().setFromUnitVectors(
+        new THREE.Vector3(0, 0, -1), // Default camera forward direction
+        direction
+      );
+  
+      // Apply tilt
+      const tiltFactor = -0.1; // Slight downward tilt
+      const tiltQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(tiltFactor, 0, 0));
+      targetQuaternion.multiply(tiltQuaternion);
+  
+      // Smoothly interpolate the camera's rotation
+      const rotationSlerpFactor = Math.max(delta * 1, 0.001); // Smooth rotation factor
+      cameraGroup.current.quaternion.slerp(targetQuaternion, rotationSlerpFactor);
+    }
   });
+  
   
   return (
     <>
@@ -72,67 +119,11 @@ const Experience = () => {
       <Map />
 
       {/* text */}
-
-      {/* Shiruma Text */}
-      <group position={[0.8, 0.85, 4.7]}>
-      <Text
-        font="/Friz Quadrata Regular.ttf"
-        anchorX="middle"
-        anchorY="middle"
-        fontSize={0.07}
-        maxWidth={2.5}
-        lineHeight={1.2}
-        whiteSpace="pre-line"
-        rotation={[Math.PI / -100, -0.9, 0]}
-        textAlign="center"
-      >
-       {/* text color */}
-       <meshStandardMaterial>
-          <GradientTexture
-            stops={[0, 1]} // Gradient stops
-            colors={['#E7D178', '#C39547']} // Gradient colors
-            size={300}
-          />
-       </meshStandardMaterial>
-
-       {/* inner text variable */}
-       {shurimaText}
-      </Text>
-      </group>
-
-      {/* Ixtal Text */}
-      <group position={[6.4, 0.91, 5.35]}>
-      <Text
-        color="white"
-        anchorX="middle"
-        anchorY="middle"
-        fontSize={0.055}
-        maxWidth={2.5}
-        lineHeight={1.2}
-        whiteSpace="pre-line"
-        rotation={[Math.PI / -100, -0.58, 0]}
-        textAlign="center"
-      >
-       {ixtalText}
-      </Text>
-      </group>
-
-      {/* Bilewater Text */}
-      <group position={[10.2, 0.55, 2.58]}>
-      <Text
-        color="white"
-        anchorX="middle"
-        anchorY="middle"
-        fontSize={0.045}
-        maxWidth={2.5}
-        lineHeight={1.2}
-        whiteSpace="pre-line"
-        rotation={[Math.PI / -500, -1.7, 0]}
-        textAlign="center"
-      >
-       {bilgeWaterText}
-      </Text>
-      </group>
+      {dataArray.map((item) => {
+        return (
+          <TextComponent key={item.title} heading={item.title} text={item.text} pos={item.pos} rotation={item.rotation} />
+        )
+      })}
 
       {/* Ionia Text */}
       <group position={[9, 0.75, -5.9]}>
@@ -221,6 +212,7 @@ const Experience = () => {
 
       {/* camera and path group */}
       <group ref={cameraGroup}>
+      <group ref={cameraRail}>
       <PerspectiveCamera
         makeDefault
         position={[0, 0, 0]}  // initial position of the camera
@@ -228,6 +220,7 @@ const Experience = () => {
         near={0.1} // view distance min
         far={30} // view distnace max
       />
+      </group>
       {path.length > 0 && (
         <Line
           points={path} // camera path

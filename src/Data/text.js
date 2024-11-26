@@ -63,3 +63,9 @@ on the rise. It is Valoran’s cultural
 center, where art, craftsmanship, 
 trade and innovation walk hand in hand.
 `;
+
+export const dataArray = [
+    {title: "Shurima", text: shurimaText, rotation: [Math.PI / 700, -1, 0], pos: [3.7, 1.06, 6.9]},
+    {title: "Ixtal", text: ixtalText, rotation: [Math.PI / -100, 0.9, 0], pos: [8.5, 1.26, 7.3]},
+    {title: "Bilgewater", text: bilgeWaterText, rotation: [Math.PI / -500, 1.2, 0], pos: [13.6, 0.9, 3.1]}
+]
