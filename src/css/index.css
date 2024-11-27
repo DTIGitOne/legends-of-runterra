@@ -31,6 +31,7 @@ code {
 /* HANDELING */
 ::-webkit-scrollbar-thumb {
   background: radial-gradient(ellipse farthest-corner at top right, #E3CE76 0%, #A67F3C 100%);
+  border: #a07833 1px solid;
   border-radius: 25px;
   height: 10%;
 }

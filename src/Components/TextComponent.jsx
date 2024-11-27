@@ -1,4 +1,5 @@
 import { GradientTexture, Text } from "@react-three/drei";
+import * as THREE from 'three';
 
 const TextComponent = ({heading, text, rotation, pos}) => {
     return (
@@ -8,19 +9,20 @@ const TextComponent = ({heading, text, rotation, pos}) => {
         font="/Friz Quadrata Regular.ttf"
         anchorX="middle"
         anchorY="middle"
-        fontSize={0.165}
+        fontSize={0.12}
         maxWidth={2.5}
+        position={[0, 0.03, 0]}
         lineHeight={1}
         rotation={rotation}
         textAlign="center"
       >
-        <meshStandardMaterial>
+        <meshBasicMaterial>
           <GradientTexture
             stops={[0, 1]} // Gradient stops
             colors={['#E7D178', '#C39547']} // Gradient colors
             size={300}
           />
-       </meshStandardMaterial>
+       </meshBasicMaterial>
         {heading}
       </Text>
 
@@ -28,7 +30,7 @@ const TextComponent = ({heading, text, rotation, pos}) => {
         font="/Friz Quadrata Regular.ttf"
         anchorX="middle"
         anchorY="top"
-        fontSize={0.07}
+        fontSize={0.051}
         maxWidth={2.5}
         lineHeight={1.2}
         whiteSpace="pre-line"
@@ -36,13 +38,13 @@ const TextComponent = ({heading, text, rotation, pos}) => {
         textAlign="center"
       >
        {/* text color */}
-       <meshStandardMaterial>
+       <meshBasicMaterial>
           <GradientTexture
             stops={[0, 1]} // Gradient stops
             colors={['#FFE784', '#F6BC5A']} // Gradient colors
             size={300}
           />
-       </meshStandardMaterial>
+       </meshBasicMaterial>
 
        {/* inner text variable */}
        {text}

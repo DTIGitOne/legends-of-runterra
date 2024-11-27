@@ -11,7 +11,7 @@ const Background = () => {
       <directionalLight position={[0, 0, 0]} intensity={0} />
 
       {/* Large sphere with a gradient background */}
-      <Sphere position={[0, 0, 0]} scale={[15, 24, 24]} rotation-y={Math.PI / 2}>
+      <Sphere position={[0, 0, 0]} scale={[20, 20, 20]} rotation-y={Math.PI / 2}>
           <meshStandardMaterial color="#357ca1" side={THREE.BackSide} />
       </Sphere>
     </>
