@@ -1,11 +1,13 @@
 import { Line, PerspectiveCamera, useScroll } from "@react-three/drei";
 import { Map } from "./Map";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import Background from "./Background";
 import { dataArray } from "../Data/text";
 import TextComponent from "./TextComponent";
+import gsap from "gsap";
+import { usePlay } from "./Play";
 
 const easeInOutCubic = (t) => {
   return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
@@ -17,6 +19,9 @@ const Experience = () => {
   const cameraRail = useRef();
   const cameraGroup = useRef(); // Group ref for camera and path
   const scroll = useScroll(); // Scroll from React Three
+  const lastScroll = useRef(0);
+
+  const { play, setHasScroll, end, setEnd } = usePlay(); // states and values for animations on overlay
 
   const FRICTION_DISTANCE = 2.5;
   
@@ -33,6 +38,14 @@ const Experience = () => {
 
   useFrame((_state, delta) => {
     if (!path || path.length === 0) return; // Ensure path is not empty
+
+    if (lastScroll.current <= 0 && scroll.offset > 0) {
+      setHasScroll(true)
+    }
+
+    if (end) {
+      return;
+    }
   
     // Calculate the current point and the next point on the path
     const curPointIndex = Math.min(
@@ -42,14 +55,18 @@ const Experience = () => {
   
     const curPoint = path[curPointIndex];
     const pointAhead = path[(curPointIndex + 1) % path.length];
-  
+
     // Interpolate camera position between curPoint and pointAhead using easing
     const scrollFraction = scroll.offset % 1;
     const easedFraction = easeInOutCubic(scrollFraction); // Easing for smoothness
-  
+
     const tempPosition = new THREE.Vector3().lerpVectors(curPoint, pointAhead, easedFraction);
+  
     const positionLerpFactor = Math.max(delta * 1, 0.01); // Ensure minimal lerp speed for smoothness
     cameraGroup.current.position.lerp(tempPosition, positionLerpFactor);
+
+    const normalizedScroll = THREE.MathUtils.clamp(scroll.offset, 0, 1);
+    tl.current.seek(normalizedScroll * tl.current.duration());
   
     // Smooth transition variables
     let isLookingAtText = false;
@@ -117,12 +134,44 @@ const Experience = () => {
       const rotationSlerpFactor = Math.max(delta * 1, 0.005); // Smooth rotation factor
       cameraGroup.current.quaternion.slerp(targetQuaternion, rotationSlerpFactor);
     }
+
+    if (curPointIndex >= path.length - 12) {
+      setEnd(true);
+    }
   });
+
+  const tl = useRef();
+
+  const backgroundColors = useRef({
+    colorA: "#3535cc",
+    colorB: "#abaadd",
+  })
+
+  useLayoutEffect(() => {
+    tl.current = gsap.timeline();
   
-  return (
+    tl.current.to(backgroundColors.current, {
+      duration: 1,
+      colorA: "#ff0000",
+      colorB: "#00ff00",
+    });
+    tl.current.to(backgroundColors.current, {
+      duration: 1,
+      colorA: "#0000ff",
+      colorB: "#ffff00",
+    });
+  
+    tl.current.pause();
+  }, []);
+  
+  return useMemo(() => (
     <>
+      {/* lighting */}
+      <ambientLight intensity={0.1} />
+      <directionalLight position={[5, 5, 5]} intensity={0.4} />
+
       {/* background component */}
-      <Background /> 
+      <Background backgroundColors={backgroundColors} />
 
       {/* the terrain component */}
       <Map />
@@ -156,7 +205,7 @@ const Experience = () => {
       </group>
 
     </>
-  );
+  ));
 };
 
 export default Experience;

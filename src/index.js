@@ -3,11 +3,14 @@ import ReactDOM from 'react-dom/client';
 import './css/index.css';
 import reportWebVitals from './reportWebVitals';
 import Main from './Site/Main';
+import { PlayProvider } from './Components/Play';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
-        <Main />
+        <PlayProvider>
+            <Main />
+        </PlayProvider>
     </React.StrictMode>
 );
 

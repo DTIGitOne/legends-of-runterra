@@ -1,0 +1,151 @@
+/* class's */
+
+.cls-1 {
+    fill: #fff;
+    stroke-width: 0px;
+}
+
+/* id's */
+
+#logo {
+    height: 25vh;
+}
+
+#mainLogoSVG {
+    height: 50%;
+    width: 50%;
+    fill: #ffffff;
+    fill-opacity: 0;
+    stroke: #ffffff;
+    stroke-width: 0.5px;
+    stroke-dashoffset: 0;
+    stroke-dasharray: 1000;
+    animation: mainLogoSVG  1.5s ease-in-out , colorSVg 2.5s ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+#logo path {
+    opacity: 0;
+    animation: fadeUp 1.8s ease-in-out forwards;
+}
+
+/* hardcoded animation delays for letters in animation */
+
+#logo path:nth-of-type(1) {
+    animation-delay: 0s;
+}
+
+#logo path:nth-of-type(2) {
+    animation-delay: 0.02s;
+}
+
+#logo path:nth-of-type(3) {
+    animation-delay: 0.04s;
+}
+
+#logo path:nth-of-type(4) {
+    animation-delay: 0.06s;
+}
+
+#logo path:nth-of-type(5) {
+    animation-delay: 0.08s;
+}
+
+#logo path:nth-of-type(6) {
+    animation-delay: 0.1s;
+}
+
+#logo path:nth-of-type(7) {
+    animation-delay: 0.12s;
+}
+
+#logo path:nth-of-type(8) {
+    animation-delay: 0.14s;
+}
+
+#logo path:nth-of-type(9) {
+    animation-delay: 0.16s;
+}
+
+#logo path:nth-of-type(10) {
+    animation-delay: 0.18s;
+}
+
+#logo path:nth-of-type(11) {
+    animation-delay: 0.2s;
+}
+
+#logo path:nth-of-type(12) {
+    animation-delay: 0.22s;
+}
+
+#logo path:nth-of-type(13) {
+    animation-delay: 0.24s;
+}
+
+#logo path:nth-of-type(14) {
+    animation-delay: 0.26s;
+}
+
+#logo path:nth-of-type(15) {
+    animation-delay: 0.28s;
+}
+
+#logo path:nth-of-type(16) {
+    animation-delay: 0.3s;
+}
+
+#logo path:nth-of-type(17) {
+    animation-delay: 0.32s;
+}
+
+#logo path:nth-of-type(18) {
+    animation-delay: 0.34s;
+}
+
+#logo path:nth-of-type(19) {
+    animation-delay: 0.36s;
+}
+
+#logo path:nth-of-type(20) {
+    animation-delay: 0.38s;
+}
+
+#logo path:nth-of-type(21) {
+    animation-delay: 0.4s;
+}
+
+/* animations */
+
+@keyframes fadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(100px);
+        filter: blur(9px);
+    }
+    100% {
+        opacity: 1;
+        filter: none;
+    }
+}
+
+@keyframes mainLogoSVG {
+    0% {
+      stroke-dashoffset: 1000;
+    }
+    100% {
+      stroke-dashoffset: 0;
+    }
+}
+
+@keyframes colorSVg {
+    0% {
+      fill-opacity: 0;
+    }
+    90% {
+      fill-opacity: 0;
+    }
+    100% {
+      fill-opacity: 1;
+    }
+  }

@@ -1,6 +1,6 @@
 body {
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -9,14 +9,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  height: 100%;
+  width: 100%;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
 #root {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
 }
 
 ::-webkit-scrollbar {
@@ -30,7 +35,7 @@ code {
 
 /* HANDELING */
 ::-webkit-scrollbar-thumb {
-  background: radial-gradient(ellipse farthest-corner at top right, #E3CE76 0%, #A67F3C 100%);
+  background: radial-gradient(ellipse farthest-corner at top right, #e3ce76 0%, #A67F3C 100%);
   border: #a07833 1px solid;
   border-radius: 25px;
   height: 10%;
