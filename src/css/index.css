@@ -25,7 +25,7 @@ code {
 }
 
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 6px;
 }
 
 /* TRACK */
@@ -36,7 +36,8 @@ code {
 /* HANDELING */
 ::-webkit-scrollbar-thumb {
   background: radial-gradient(ellipse farthest-corner at top right, #e3ce76 0%, #A67F3C 100%);
-  border: #a07833 1px solid;
+  border: #a67f3cd3 1px solid;
   border-radius: 25px;
   height: 10%;
+  cursor: grab;
 }

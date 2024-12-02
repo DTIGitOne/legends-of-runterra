@@ -1,14 +1,14 @@
 import { Line, PerspectiveCamera, useScroll } from "@react-three/drei";
 import { Map } from "./Map";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import Background from "./Background";
 import { dataArray } from "../Data/text";
 import TextComponent from "./TextComponent";
-import gsap from "gsap";
 import { usePlay } from "./Play";
 
+// formula for camera movement
 const easeInOutCubic = (t) => {
   return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
 };
@@ -21,82 +21,92 @@ const Experience = () => {
   const scroll = useScroll(); // Scroll from React Three
   const lastScroll = useRef(0);
 
-  const { play, setHasScroll, end, setEnd } = usePlay(); // states and values for animations on overlay
+  const { setHasScroll, end, setEnd } = usePlay(); // states and values for animations on overlay
 
   const FRICTION_DISTANCE = 2.5;
   
   useEffect(() => {
     const loadPathData = async () => {
       const response = await fetch("Track/ProjectPathMain.json"); // Path render into .JSON using Blender extension
-      const data = await response.json();
-      const pathPoints = data.points.map((point) => new THREE.Vector3(point.x, point.y, point.z));
+      const data = await response.json(); // await fetching
+      const pathPoints = data.points.map((point) => new THREE.Vector3(point.x, point.y, point.z)); // mapped out blender points into three vectros
       
-      setPath(pathPoints);
+      setPath(pathPoints); // set points state
     };
     loadPathData();
   }, []);
 
   useFrame((_state, delta) => {
-    if (!path || path.length === 0) return; // Ensure path is not empty
+    if (!path || path.length === 0) return; // if path exists 
 
+    let friction = 1;
+  
+    // Set hasScroll if scrolling starts
     if (lastScroll.current <= 0 && scroll.offset > 0) {
-      setHasScroll(true)
-    }
-
-    if (end) {
-      return;
+      setHasScroll(true);
     }
   
-    // Calculate the current point and the next point on the path
+    // if true end the useFrame camera movement 
+    if (end) return;
+  
+    // Calculate lerped scroll offset
+    let lerpedScrollOffset = THREE.MathUtils.lerp(
+      lastScroll.current,
+      scroll.offset,
+      delta * friction
+    );
+  
+    // Clamp lerpedScrollOffset to [0, 1]
+    lerpedScrollOffset = Math.min(Math.max(lerpedScrollOffset, 0), 1);
+    lastScroll.current = lerpedScrollOffset;
+  
+    // Determine the current and next points on the path
     const curPointIndex = Math.min(
-      Math.round(scroll.offset * path.length),
+      Math.floor(lerpedScrollOffset * path.length),
       path.length - 1
     );
   
+    // current/next located camera and path point location
     const curPoint = path[curPointIndex];
     const pointAhead = path[(curPointIndex + 1) % path.length];
-
-    // Interpolate camera position between curPoint and pointAhead using easing
-    const scrollFraction = scroll.offset % 1;
-    const easedFraction = easeInOutCubic(scrollFraction); // Easing for smoothness
-
+  
+    // Interpolate between points using eased fraction
+    const scrollFraction = lerpedScrollOffset % 1;
+    const easedFraction = easeInOutCubic(scrollFraction);
+  
     const tempPosition = new THREE.Vector3().lerpVectors(curPoint, pointAhead, easedFraction);
   
-    const positionLerpFactor = Math.max(delta * 1, 0.01); // Ensure minimal lerp speed for smoothness
+    // Smooth camera position
+    const positionLerpFactor = Math.max(delta * 1, 0.01);
     cameraGroup.current.position.lerp(tempPosition, positionLerpFactor);
-
-    const normalizedScroll = THREE.MathUtils.clamp(scroll.offset, 0, 1);
-    tl.current.seek(normalizedScroll * tl.current.duration());
   
-    // Smooth transition variables
+    // Handle camera rotation
     let isLookingAtText = false;
     let targetLookAt = null;
     let transitionFactor = 1;
   
+    // mapped out text arrays for the camera to slow down and look at the text being mapped out
     dataArray.forEach((text) => {
-      const textPosition = new THREE.Vector3(...text.pos); // Parse position from JSON
-      const distance = cameraGroup.current.position.distanceTo(textPosition);
+      const textPosition = new THREE.Vector3(...text.pos); // text postition from json turned into three vectors
+      const distance = cameraGroup.current.position.distanceTo(textPosition); // distance to the text to control camera and scroll movement
   
       if (distance < FRICTION_DISTANCE) {
-        // Calculate direction from camera to text
-        const directionToText = new THREE.Vector3().subVectors(
-          textPosition,
-          cameraGroup.current.position
-        ).normalize();
+        friction = Math.max(distance / FRICTION_DISTANCE, 0.1);
   
-        const cameraForward = new THREE.Vector3(0, 0, -1)
-          .applyQuaternion(cameraGroup.current.quaternion);
+        const directionToText = new THREE.Vector3()
+          .subVectors(textPosition, cameraGroup.current.position)
+          .normalize();
   
-        // Only look at the text if it is in front of the camera
+        const cameraForward = new THREE.Vector3(0, 0, -1).applyQuaternion(cameraGroup.current.quaternion);
+  
         const dotProduct = directionToText.dot(cameraForward);
-        if (dotProduct > 0) { // Text is in front of the camera
+        if (dotProduct > 0) {
           targetLookAt = textPosition.clone();
-          targetLookAt.y -= 0.3; // Pan down slightly
+          targetLookAt.y -= 0.3;
           isLookingAtText = true;
   
-          // Smooth transition factor
           transitionFactor = THREE.MathUtils.clamp(
-            1 - (distance / FRICTION_DISTANCE),
+            1 - distance / FRICTION_DISTANCE,
             0,
             1
           );
@@ -104,65 +114,41 @@ const Experience = () => {
       }
     });
   
+    // if true, to look at the direction of the position of the text and return camera smootly to path position
     if (isLookingAtText && targetLookAt) {
-      // Blend between looking at the text and the path direction
       const directionToText = new THREE.Vector3().subVectors(targetLookAt, cameraGroup.current.position).normalize();
       const pathDirection = new THREE.Vector3().subVectors(pointAhead, curPoint).normalize();
       const blendedDirection = directionToText.lerp(pathDirection, 1 - transitionFactor);
   
       const targetQuaternion = new THREE.Quaternion().setFromUnitVectors(
-        new THREE.Vector3(0, 0, -1), // Default camera forward direction
+        new THREE.Vector3(0, 0, -1),
         blendedDirection
       );
   
-      const rotationSlerpFactor = Math.max(delta * 1, 0.005); // Smooth rotation factor
+      const rotationSlerpFactor = Math.max(delta * 1, 0.005);
       cameraGroup.current.quaternion.slerp(targetQuaternion, rotationSlerpFactor);
     } else {
-      // Default smooth rotation along the path
       const direction = new THREE.Vector3().subVectors(pointAhead, curPoint).normalize();
       const targetQuaternion = new THREE.Quaternion().setFromUnitVectors(
-        new THREE.Vector3(0, 0, -1), // Default camera forward direction
+        new THREE.Vector3(0, 0, -1),
         direction
       );
-
-      // Apply tilt
-      const tiltFactor = -0.1; // Slight downward tilt
+  
+      // tilt the camera forwards a little bit
+      const tiltFactor = -0.1;
       const tiltQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(tiltFactor, 0, 0));
       targetQuaternion.multiply(tiltQuaternion);
   
-      // Smoothly interpolate the camera's rotation
-      const rotationSlerpFactor = Math.max(delta * 1, 0.005); // Smooth rotation factor
+      // rotation of the camera
+      const rotationSlerpFactor = Math.max(delta * 1, 0.005);
       cameraGroup.current.quaternion.slerp(targetQuaternion, rotationSlerpFactor);
     }
-
-    if (curPointIndex >= path.length - 12) {
+  
+    // if the camera is located 10 points before the last point, end the scene and trigger outro overlay
+    if (curPointIndex >= path.length - 10) {
       setEnd(true);
     }
   });
-
-  const tl = useRef();
-
-  const backgroundColors = useRef({
-    colorA: "#3535cc",
-    colorB: "#abaadd",
-  })
-
-  useLayoutEffect(() => {
-    tl.current = gsap.timeline();
-  
-    tl.current.to(backgroundColors.current, {
-      duration: 1,
-      colorA: "#ff0000",
-      colorB: "#00ff00",
-    });
-    tl.current.to(backgroundColors.current, {
-      duration: 1,
-      colorA: "#0000ff",
-      colorB: "#ffff00",
-    });
-  
-    tl.current.pause();
-  }, []);
   
   return useMemo(() => (
     <>
@@ -171,7 +157,7 @@ const Experience = () => {
       <directionalLight position={[5, 5, 5]} intensity={0.4} />
 
       {/* background component */}
-      <Background backgroundColors={backgroundColors} />
+      <Background />
 
       {/* the terrain component */}
       <Map />
@@ -185,23 +171,26 @@ const Experience = () => {
 
       {/* camera and path group */}
       <group ref={cameraGroup}>
-      <group ref={cameraRail}>
-      <PerspectiveCamera
-        makeDefault
-        position={[0, 0, 0]}  // initial position of the camera
-        fov={60} // fieald of view 
-        near={0.1} // view distance min
-        far={30} // view distnace max
-      />
-      </group>
-      {path.length > 0 && (
-        <Line
-          points={path} // camera path
-          opacity={0}
-          transparent
-          lineWidth={3}
+
+        <group ref={cameraRail}>
+        <PerspectiveCamera
+          makeDefault
+          position={[0, 0, 0]}  // initial position of the camera
+          fov={60} // fieald of view 
+          near={0.1} // view distance min
+          far={30} // view distnace max
         />
-      )}
+        </group>
+  
+        {path.length > 0 && (
+          <Line
+            points={path} // camera path
+            opacity={0}
+            transparent
+            lineWidth={3}
+          />
+        )}
+      
       </group>
 
     </>

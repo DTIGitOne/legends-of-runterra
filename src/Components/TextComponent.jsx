@@ -1,5 +1,4 @@
 import { GradientTexture, Text } from "@react-three/drei";
-import * as THREE from 'three';
 
 const TextComponent = ({heading, text, rotation, pos}) => {
     return (

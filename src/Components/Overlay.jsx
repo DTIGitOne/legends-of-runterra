@@ -1,20 +1,24 @@
 import gsap from 'gsap';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '../css/overlay.css';
 import Logo from "../svg/Logo";
 import { useProgress } from '@react-three/drei';
 import { usePlay } from './Play';
 import DTLogo from '../svg/DTLogo';
+import LeagueIcon from '../svg/LeagueIcon';
+import { openURLInNewWindow } from '../js/functions';
 
-const myWebsite = process.env.REACT_APP_MY_SITE;
+const leagueMap = process.env.REACT_APP_LEAGUE_SITE_MAP; // env variable for my offical game map
 
 const Overlay = () => {
   const { play, end, setPlay, hasScroll } = usePlay(); // play,end state for start
+  const [hoverd, setHoverd] = useState(false); // state for the link box to extend
   
   const buttonRef = useRef(null); // Ref for the button
 
   const { progress } = useProgress(); // Progress for loader animation
 
+  // useEffect hook with gsap animation for the "Check out" button animation
   useEffect(() => {
     // Only initialize GSAP when the button is available
     if (progress === 100 && buttonRef.current) {
@@ -93,14 +97,22 @@ const Overlay = () => {
   }, [progress]); // Depend on `progress` to re-run when it's 100
 
   return (
-    <div className={`overlayBox ${play ? "overlayBox--disappear" : ""} ${hasScroll ? "overlay--scrolled" : ""}`}>
+    <div className={`overlayBox ${play && !end ? "overlayBox--disappear" : "overlayBox--appear"} ${hasScroll ? "overlay--scrolled" : ""}`}>
+      {/* Wait until 3d models load, show white screen until load and then load in elements by setting useProgress state*/}
       <div className={`loader ${progress === 100 ? "loader--disappear" : ""}`} />
+
       {progress === 100 && (
-        <div className={`introBox ${play ? "intro-disappear" : ""}`} >
+        <>
+        {/* Intro layout overlay */}
+        <div className={`introBox ${play ? "intro-disappear" : ""}`} style={{zIndex: end ? 1 : 10}}>
+
           <h1 id="topText">
             <Logo />
           </h1>
+
           <p className='intro__scroll'>Scroll down</p>
+  
+          {/* button */}
           <a
             href="#"
             className="button button--stroke"
@@ -111,17 +123,33 @@ const Overlay = () => {
             <span className="button__flair"></span>
             <span className="button__label">Check out</span>
           </a>
+          {/* */}
+
         </div>
+
+        {/* Outro layout overlay */}
+        <div className={`outro ${end ? "outro--appear" : ""}`} style={{zIndex: end ? 99 : 3}}>
+            <p className='outro__text'>Thank you for browsing through the website</p>
+            <div className='outro__text2'>check out:</div>
+            {/* state to load in to trigger animation on state change */}
+
+            {end ? (
+                <>
+
+                  <div id='officalLinkBox' onClick={() => openURLInNewWindow(leagueMap)} onMouseEnter={() => setHoverd(true)} onMouseLeave={() => setHoverd(false)} className={`${hoverd ? "hoverd" : "leftHover"}`}>
+                    <LeagueIcon />
+                  </div>
+
+                  <DTLogo />
+
+                </>
+            ) : null}
+
+            {/* */}
+        </div>
+        </>
       )}
-      <div className={`outro ${end ? "outro--appear" : ""}`}>
-        <p className='outro__text'>Thank you for browsing through the website</p>
-        <div>My socials</div>
-        {end ? (
-            <button>
-                <DTLogo />
-            </button>
-        ): null}
-      </div>
+      
     </div>
   );
 };

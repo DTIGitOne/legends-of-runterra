@@ -12,21 +12,34 @@
 }
 
 #mainLogoSVG {
-    height: 50%;
-    width: 50%;
-    fill: #ffffff;
+    height: 8.5%;
+    width: 8.5%;
+}
+
+#mainLogoSVG .cls-1 {
+    fill: #fff;
     fill-opacity: 0;
-    stroke: #ffffff;
+    stroke: #fff;
     stroke-width: 0.5px;
     stroke-dashoffset: 0;
-    stroke-dasharray: 1000;
-    animation: mainLogoSVG  1.5s ease-in-out , colorSVg 2.5s ease-in-out;
+    stroke-dasharray: 2000;
+    animation: mainLogoSVG  6s ease-in-out , colorSVg 3s ease-in-out;
     animation-fill-mode: forwards;
+    cursor: pointer;
 }
 
 #logo path {
     opacity: 0;
     animation: fadeUp 1.8s ease-in-out forwards;
+}
+
+#leagueIcon {
+    width: 65%;
+    height: 65%;
+}
+
+#leagueIcon path {
+    fill: #c8aa6e;
 }
 
 /* hardcoded animation delays for letters in animation */
@@ -117,6 +130,7 @@
 
 /* animations */
 
+/* animation for initial text on site */
 @keyframes fadeUp {
     0% {
         opacity: 0;
@@ -129,9 +143,10 @@
     }
 }
 
+/* animations for drawing the svg at outro */
 @keyframes mainLogoSVG {
     0% {
-      stroke-dashoffset: 1000;
+      stroke-dashoffset: 2000;
     }
     100% {
       stroke-dashoffset: 0;
@@ -148,4 +163,5 @@
     100% {
       fill-opacity: 1;
     }
-  }
+}
+/* */

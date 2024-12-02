@@ -3,7 +3,7 @@ import { useGraph } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import { SkeletonUtils } from 'three-stdlib'
 
-// the 3d model render into a component using (npx gltfjsx object);
+// the 3d model render into a component using (npx gltfjsx (model path));
 export function Map(props) {
   const { scene } = useGLTF('./Model/Project.gltf')
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
