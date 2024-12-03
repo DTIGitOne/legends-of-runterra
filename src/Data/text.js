@@ -70,5 +70,5 @@ export const dataArray = [
     {title: "Noxus", text: noxusText, rotation: [Math.PI / 500, 0, 0], pos: [-1.6, 1.1, -7.7]},
     {title: "Freljord", text: freljordText, rotation: [Math.PI / 40, -3.92, -0.07], pos: [-13.93, 1.05, -6]},
     {title: "Demacia", text: demaciaText, rotation: [Math.PI / 100, -0.72, 0], pos: [-12.37, 0.87, -3.97]},
-    {title: "Piltover", text: piltoverText, rotation: [Math.PI / -250, -2.3, 0.05], pos: [5, 1.14, 1.288]}
+    {title: "Piltover", text: piltoverText, rotation: [Math.PI / -500, -2.3, 0.05], pos: [5, 1.14, 1.288]}
 ]

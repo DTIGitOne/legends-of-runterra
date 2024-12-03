@@ -5,7 +5,7 @@ import * as THREE from "three";
 const Background = () => {
 
   return (
-      <Sphere scale={[20, 20, 20]} rotation-y={Math.PI / 2}>
+      <Sphere scale={[26, 26, 26]} rotation-y={Math.PI / 2}>
         <LayerMaterial color={"#ffffff"} side={THREE.BackSide}>
           <Gradient
             colorA="#447070"

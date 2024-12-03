@@ -40,7 +40,7 @@ const TextComponent = ({heading, text, rotation, pos}) => {
        <meshBasicMaterial>
           <GradientTexture
             stops={[0, 1]} // Gradient stops
-            colors={['#FFE784', '#F6BC5A']} // Gradient colors
+            colors={['#dfab53', '#FFE784']} // Gradient colors
             size={300}
           />
        </meshBasicMaterial>

@@ -17,6 +17,7 @@ const Experience = () => {
   const [path, setPath] = useState([]); // State to save path dots
 
   const cameraRail = useRef();
+  const camera = useRef();
   const cameraGroup = useRef(); // Group ref for camera and path
   const scroll = useScroll(); // Scroll from React Three
   const lastScroll = useRef(0);
@@ -38,6 +39,14 @@ const Experience = () => {
 
   useFrame((_state, delta) => {
     if (!path || path.length === 0) return; // if path exists 
+
+    if (window.innerWidth > window.innerHeight) {
+      // LANDSCAPE
+      camera.current.fov = 63;
+    } else {
+      // PORTTRAIT
+      camera.current.fov = 90;
+    }
 
     let friction = 1;
   
@@ -153,8 +162,8 @@ const Experience = () => {
   return useMemo(() => (
     <>
       {/* lighting */}
-      <ambientLight intensity={0.1} />
-      <directionalLight position={[5, 5, 5]} intensity={0.4} />
+      <ambientLight intensity={0.2} />
+      <directionalLight position={[5, 5, 5]} intensity={0.15} />
 
       {/* background component */}
       <Background />
@@ -174,11 +183,12 @@ const Experience = () => {
 
         <group ref={cameraRail}>
         <PerspectiveCamera
+          ref={camera}
           makeDefault
           position={[0, 0, 0]}  // initial position of the camera
           fov={60} // fieald of view 
           near={0.1} // view distance min
-          far={30} // view distnace max
+          far={50} // view distnace max
         />
         </group>
   

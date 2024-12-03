@@ -13,7 +13,7 @@ const Main = () => {
        {/* scene for the 3d elements */}
        <Canvas
             onCreated={({ gl, scene }) => {
-              scene.fog = new THREE.Fog("rgba(68, 112, 112, 1)", 4, 6); // Fog color, start, and end distance
+              scene.fog = new THREE.Fog("rgba(13, 65, 66, 1)", 4, 6); // Fog color, start, and end distance
             }} 
        >
           {/* scrolling function for the site */}

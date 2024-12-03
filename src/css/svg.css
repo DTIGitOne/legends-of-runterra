@@ -13,7 +13,8 @@
 
 #mainLogoSVG {
     height: 8.5%;
-    width: 8.5%;
+    width: auto;
+    cursor: pointer;
 }
 
 #mainLogoSVG .cls-1 {
@@ -25,7 +26,6 @@
     stroke-dasharray: 2000;
     animation: mainLogoSVG  6s ease-in-out , colorSVg 3s ease-in-out;
     animation-fill-mode: forwards;
-    cursor: pointer;
 }
 
 #logo path {
@@ -165,3 +165,12 @@
     }
 }
 /* */
+
+/* phone query */
+
+@media screen and (max-width: 768px) {
+    /* overlay */
+    #logo {
+        height: 10vh;
+    }
+}

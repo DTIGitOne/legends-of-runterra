@@ -10,7 +10,7 @@ export function Map(props) {
   const { nodes, materials } = useGraph(clone)
   return (
     <group {...props} dispose={null}>
-      <directionalLight intensity={6} decay={2} position={[0.855, 20.122, -0.426]} rotation={[-2.303, -0.094, -0.967]} scale={[7.959, 1.317, 2.506]} target={nodes.Light001.target}>
+      <directionalLight intensity={1.6} decay={2} position={[0.855, 20.122, -0.426]} rotation={[-2.303, -0.094, -0.967]} scale={[7.959, 1.317, 2.506]} target={nodes.Light001.target}>
         <primitive object={nodes.Light001.target} position={[0, 0, -1]} />
       </directionalLight>
       <mesh geometry={nodes.Plane.geometry} material={materials.Texture} position={[-0.138, 0.049, -0.059]} scale={[28.861, 28.351, 17.601]} />
